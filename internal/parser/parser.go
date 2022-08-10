@@ -7,10 +7,10 @@ import (
 )
 
 var (
-	regExKey, _          = regexp.Compile("^[a-zA-Z]{1}[a-zA-Z0-9_]+$")
-	regExValueBase, _    = regexp.Compile("^([?${}a-zA-Z0-9.:=/_@/]+)")
-	regExValueSingleQ, _ = regexp.Compile("^'([?${}a-zA-Z0-9.:=_#@/-]+)'")
-	regExValueDoubleQ, _ = regexp.Compile("^\"([?${}a-zA-Z0-9.:=_#@/-]+)\"")
+	regExKey, _          = regexp.Compile("^[a-zA-Z]{1}(\\w+|\\.|\\[[\\w\\-]+\\])+$")
+	regExValueBase, _    = regexp.Compile("^(\\w|\\S)+")
+	regExValueSingleQ, _ = regexp.Compile("^'(\\w+|\\S+)'")
+	regExValueDoubleQ, _ = regexp.Compile("^\"(\\w+|\\S+)\"")
 )
 
 type Env struct {
@@ -46,16 +46,16 @@ func ParseLines(lines []string) []Env {
 				}
 				break
 			}
-		case regExValueBase.MatchString(value):
-			{
-				value = regExValueBase.FindString(value)
-				break
-			}
 		case regExValueDoubleQ.MatchString(value):
 			{
 				if groups := regExValueDoubleQ.FindStringSubmatch(value); len(groups) > 1 {
 					value = groups[1]
 				}
+				break
+			}
+		case regExValueBase.MatchString(value):
+			{
+				value = regExValueBase.FindString(value)
 				break
 			}
 		default:
